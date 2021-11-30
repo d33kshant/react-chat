@@ -3,6 +3,7 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { getAuth } from 'firebase/auth'
 import app from './firebase'
 import Loading from './screens/Loading'
+import Home from './screens/Home'
 
 const App = () => {
 
@@ -11,7 +12,7 @@ const App = () => {
 	if (loading) return <Loading />
 	if (user) {
 		console.log(user)
-		return `User: ${user.uid}`
+		return <Home user={user} />
 	}
 
 	return (
