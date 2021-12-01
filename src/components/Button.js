@@ -2,7 +2,7 @@ import styled from 'styled-components'
 
 const Container = styled.button`
 	border: none;
-	background: #1a73e8;
+	background: #0095f6;
 	border-radius: 4px;
 	padding: 6px 24px;
 	font-family: inherit;
@@ -13,8 +13,8 @@ const Container = styled.button`
 	box-sizing: border-box;
 	cursor: pointer;
 
-	:hover{
-		background: #1765cc;
+	:hover {
+		background: #005c99;
 	}
 `
 
