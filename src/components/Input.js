@@ -6,6 +6,7 @@ const Container = styled.div`
 	border-top: 1px solid lightgray;
 	/* border-radius: 32px; */
 	width: 100%;
+	height: 52px;
 	position: sticky;
 	box-sizing: border-box;
 	display: flex;
