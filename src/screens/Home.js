@@ -13,11 +13,15 @@ import app from '../firebase'
 import { useCollection } from 'react-firebase-hooks/firestore'
 import ContactSkeleton from '../components/ContactSkeleton'
 import ChatList from '../components/ChatList'
+import NewChatModal from '../components/modal/NewChatModal'
+import ErrorModal from '../components/modal/ErrorModal'
 
 const Home = ({ user }) => {
 
 	const [screen, setScreen] = useState(0)
-	const [profile, setProfile] = useState(false)
+	const [profileModal, setProfileModal] = useState(false)
+	const [newChatModal, setNewChatModal] = useState(false)
+	const [errorModal, setErrorModal] = useState(false)
 	const [room, setRoom] = useState(null)
 	const [title, setTitle] = useState('react-chat')
 
@@ -25,23 +29,25 @@ const Home = ({ user }) => {
 
 	const [rooms, loadingRooms, error] = useCollection(query(collection(getFirestore(app), 'rooms'), where('users', 'array-contains', user.email), orderBy('lastUpdate', 'desc')))
 
-	const createChat = async () => {
-		const email = prompt('Enter an email to start a chat.')
-		const exist = await emailExist(email)
-		if (!chatExist(email) && exist && email !== user.email) {
-			const docRef = await addDoc(collection(getFirestore(app), 'rooms'), {
+	const createChat = async (email) => {
+		const valid = await emailExist(email) && !(await chatExist(email)) && email !== user.email
+		if (valid) {
+			await addDoc(collection(getFirestore(app), 'rooms'), {
 				users: [user.email, email],
 				lastUpdate: serverTimestamp(),
 			})
-			setRoom(docRef.id)
-			setScreen(1)
 		} else {
-			alert('This email cannot be used.')
+			setErrorModal(true)
 		}
 	}
 
-	const chatExist = (other) => {
-		return !!rooms?.docs.find(room => room.data().users.find(user => user !== other)?.length > 0)
+	const chatExist = async (other) => {
+		// return !!rooms?.docs.find(room => room.data().users.find(user => user !== other)?.length > 0)
+		const result = await getDocs(query(collection(getFirestore(app), 'rooms'), where('users', 'array-contains', user.email)))
+		return result.docs.filter(doc=>{
+			const { users } = doc.data()
+			return users.indexOf(other) !== -1
+		}).length > 0
 	}
 
 	const emailExist = async (email) => {
@@ -70,16 +76,16 @@ const Home = ({ user }) => {
 			<Container>
 				<Contacts style={{ transform: `translateX(-${(screen) * 100}%)` }} >
 					<Header>
-						<ProfileButton onClick={() => setProfile(true)} >
+						<ProfileButton onClick={() => setProfileModal(true)} >
 							<SmallAvatar width="24" src={user.photoURL} />
 						</ProfileButton>
 						<Title>react-chat</Title>
-						<IconButton onClick={createChat} >
+						<IconButton onClick={()=>setNewChatModal(true)} >
 							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" ><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
 						</IconButton>
 					</Header>
 					<ContactList>
-						{loadingRooms ? <ContactSkeleton /> : rooms ? rooms.docs.map((doc, index) => <Contact setTitle={setTitle} key={index} room={doc.id} user={doc.data().users.find(email => email !== user.email)} onClick={() =>{setRoom(doc.id);setScreen(1)}} />) : `${error}`}
+						{loadingRooms ? <ContactSkeleton /> : rooms ? rooms.docs.map((doc, index) => <Contact setTitle={setTitle} key={index} room={doc.id} user={doc.data().users.find(email => email !== user.email)} onClick={()=>{setRoom(doc.id);setScreen(1)}} />) : `${error}`}
 					</ContactList>
 				</Contacts>
 				<Chats style={{ transform: `translateX(-${(screen) * 100}%)` }}>
@@ -96,7 +102,9 @@ const Home = ({ user }) => {
 					<Input to={inputRef} onSubmit={sendText} />
 				</Chats>
 			</Container>
-			{profile && <ProfileModal user={user} onClose={() => setProfile(false)} />}
+			{profileModal && <ProfileModal user={user} onClose={() => setProfileModal(false)} />}
+			{newChatModal && <NewChatModal onSubmit={(email)=>{createChat(email); setNewChatModal(false)}} onClose={()=>setNewChatModal(false)} />}
+			{errorModal && <ErrorModal onClose={()=>setErrorModal(false)} />}
 		</>
 	)
 }
@@ -113,7 +121,7 @@ const Container = styled.div`
 const ContactList = styled.div`
 	width: 100%;
 	overflow-y: auto;
-	height: 100%;
+	height: calc(100% - 48px);
 `
 
 const ProfileButton = styled(IconButton)`
