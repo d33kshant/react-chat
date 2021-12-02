@@ -6,7 +6,7 @@ const Container = styled.div`
 	border: 1px solid lightgray;
 	box-sizing: border-box;
 	border-radius: 8px;
-	max-width: 50%;
+	max-width: 60%;
 	padding: 8px;
 `
 
