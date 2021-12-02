@@ -51,6 +51,7 @@ const Home = ({ user }) => {
 
 	const sendText = async () => {
 		const text = inputRef.current.value.trim()
+		inputRef.current.value = ''
 
 		if(!text) return
 
@@ -62,7 +63,6 @@ const Home = ({ user }) => {
 		const firestore = getFirestore(app)
 		await addDoc(collection(firestore,  'rooms', room, 'chats'), data)
 		await setDoc(doc(firestore, 'rooms', room), { lastUpdate: data.time }, {merge: true})
-		inputRef.current.value = ''
 	}
 
 	return (
@@ -112,7 +112,7 @@ const Container = styled.div`
 
 const ContactList = styled.div`
 	width: 100%;
-	overflow-y: scroll;
+	overflow-y: auto;
 	height: 100%;
 `
 
