@@ -1,4 +1,4 @@
-import { collection, getDocs, getFirestore, limit, orderBy, query, where } from '@firebase/firestore'
+import { collection, getFirestore, limit, orderBy, query, where } from '@firebase/firestore'
 import React, { useEffect, useState } from 'react'
 import { useCollection } from 'react-firebase-hooks/firestore'
 import styled from 'styled-components'
@@ -47,19 +47,12 @@ const Subtitle = styled.p`
 const Contact = ({ room, user, setTitle, onClick }) => {
 	
 	const [ userSnapshot, loading ] = useCollection(query(collection(getFirestore(app), 'users'), where('email', '==', user)))
+	const [ lastMsg ] = useCollection(query(collection(getFirestore(app), 'rooms', room, 'chats'), orderBy('time', 'desc'), limit(1)))
 	const [subtitle, setSubtitle] = useState('Loading...')
 
 	useEffect(() => {
-		getDocs(query(collection(getFirestore(app), 'rooms', room, 'chats'), orderBy('time', 'desc'), limit(1)))
-		.then(res=>{
-			if(res.docs.length > 0) {
-				const chat = res.docs[0].data()
-				if(chat.author === user){
-					setSubtitle(res.docs[0].data().body)
-				}else { setSubtitle(`Me: ${res.docs[0].data().body}`) }
-			}else { setSubtitle(`Tap to start chat.`) }
-		})
-	}, [room, user])
+		if(lastMsg) setSubtitle(lastMsg?.docs[0]?.data()?.body)
+	}, [lastMsg])
 
 	return (
 		<>
