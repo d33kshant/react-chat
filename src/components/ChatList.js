@@ -12,7 +12,6 @@ const Container = styled.div`
 	display: flex;
 	flex-direction: column-reverse;
 	align-items: center;
-	/* justify-content: flex-end; */
 	box-sizing: border-box;
 	padding: 0 8px;
 	gap: 8px;
@@ -21,7 +20,6 @@ const Container = styled.div`
 
 const Space = styled.div`
 	width: 100%;
-	/* height: 8px; */
 `
 
 const ChatList = ({ room, self }) => {
@@ -37,7 +35,7 @@ const ChatList = ({ room, self }) => {
 
 	return (
 		<Container>
-			<Space ref={endRef}>{/* Just for some extra bottom spacing */}</Space>
+			<Space ref={endRef}>{/* Just for some extra spacing */}</Space>
 			{
 				error ? 'Ooops Something Went Wrong' :
 				loading ? 
@@ -48,7 +46,7 @@ const ChatList = ({ room, self }) => {
 					return <Chat key={index} self={author===self} time={time ? time.toDate().toDateString(): 'sending..'}>{body}</Chat>
 				}) : 'Ooops'
 			}
-			<Space >{/* Just for some extra bottom spacing */}</Space>
+			<Space >{/* Just for some extra spacing */}</Space>
 		</Container>
 	)
 }
