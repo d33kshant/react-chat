@@ -1,4 +1,4 @@
-import { addDoc, collection, getDocs, getFirestore, query, where, serverTimestamp, orderBy, setDoc, doc } from '@firebase/firestore'
+import { addDoc, collection, getDocs, getFirestore, query, where, serverTimestamp, orderBy, setDoc, doc, deleteDoc } from '@firebase/firestore'
 import React, { useRef, useState } from 'react'
 import styled from 'styled-components'
 import Chats from '../components/Chats'
@@ -15,6 +15,8 @@ import ContactSkeleton from '../components/ContactSkeleton'
 import ChatList from '../components/ChatList'
 import NewChatModal from '../components/modal/NewChatModal'
 import ErrorModal from '../components/modal/ErrorModal'
+import ChatInfoModal from '../components/modal/ChatInfoModal'
+import EmptyContacts from '../components/EmptyContacts'
 
 const Home = ({ user }) => {
 
@@ -22,12 +24,13 @@ const Home = ({ user }) => {
 	const [profileModal, setProfileModal] = useState(false)
 	const [newChatModal, setNewChatModal] = useState(false)
 	const [errorModal, setErrorModal] = useState(false)
+	const [chatInfoModal, setChatInfoModal] = useState(false)
 	const [room, setRoom] = useState(null)
 	const [title, setTitle] = useState('react-chat')
 
 	const inputRef = useRef()
 
-	const [rooms, loadingRooms, error] = useCollection(query(collection(getFirestore(app), 'rooms'), where('users', 'array-contains', user.email), orderBy('lastUpdate', 'desc')))
+	const [rooms, loadingRooms] = useCollection(query(collection(getFirestore(app), 'rooms'), where('users', 'array-contains', user.email), orderBy('lastUpdate', 'desc')))
 
 	const createChat = async (email) => {
 		const valid = await emailExist(email) && !(await chatExist(email)) && email !== user.email
@@ -42,7 +45,6 @@ const Home = ({ user }) => {
 	}
 
 	const chatExist = async (other) => {
-		// return !!rooms?.docs.find(room => room.data().users.find(user => user !== other)?.length > 0)
 		const result = await getDocs(query(collection(getFirestore(app), 'rooms'), where('users', 'array-contains', user.email)))
 		return result.docs.filter(doc=>{
 			const { users } = doc.data()
@@ -71,6 +73,12 @@ const Home = ({ user }) => {
 		await setDoc(doc(firestore, 'rooms', room), { lastUpdate: data.time }, {merge: true})
 	}
 
+	const deleteChat = async (room) => {
+		setScreen(0)
+		await deleteDoc(doc(getFirestore(app), 'rooms', room))
+		alert('Chats has been deleted.')
+	}
+
 	return (
 		<>
 			<Container>
@@ -85,16 +93,16 @@ const Home = ({ user }) => {
 						</IconButton>
 					</Header>
 					<ContactList>
-						{loadingRooms ? <ContactSkeleton /> : rooms ? rooms.docs.map((doc, index) => <Contact setTitle={setTitle} key={index} room={doc.id} user={doc.data().users.find(email => email !== user.email)} onClick={()=>{setRoom(doc.id);setScreen(1)}} />) : `${error}`}
+						{loadingRooms ? <ContactSkeleton /> : rooms?.docs?.length > 0 ? rooms.docs.map((doc, index) => <Contact setTitle={setTitle} key={index} room={doc.id} user={doc.data().users.find(email => email !== user.email)} onClick={()=>{setRoom(doc.id);setScreen(1)}} />) : <EmptyContacts />}
 					</ContactList>
 				</Contacts>
 				<Chats style={{ transform: `translateX(-${(screen) * 100}%)` }}>
 					<Header>
-						<IconButton onClick={() => setScreen(0)}>
+						<IconButton onClick={() => {setScreen(0);setRoom(null)}}>
 							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" ><polyline points="15 18 9 12 15 6" /></svg>
 						</IconButton>
 						<Title>{title}</Title>
-						<IconButton>
+						<IconButton onClick={()=>setChatInfoModal(true)}>
 							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" ><circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" /></svg>
 						</IconButton>
 					</Header>
@@ -105,6 +113,7 @@ const Home = ({ user }) => {
 			{profileModal && <ProfileModal user={user} onClose={() => setProfileModal(false)} />}
 			{newChatModal && <NewChatModal onSubmit={(email)=>{createChat(email); setNewChatModal(false)}} onClose={()=>setNewChatModal(false)} />}
 			{errorModal && <ErrorModal onClose={()=>setErrorModal(false)} />}
+			{(chatInfoModal && room) && <ChatInfoModal self={user.email} room={room} onAction={()=>deleteChat(room)} onClose={()=>setChatInfoModal(false)}/>}
 		</>
 	)
 }
