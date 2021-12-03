@@ -11,6 +11,7 @@ const Container = styled.div`
 	align-items: center;
 	cursor: pointer;
 	background: white;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
 	:hover {
 		background: rgba(0, 0, 0, 0.05);
@@ -28,7 +29,6 @@ const Info = styled.div`
 	display: flex;
 	flex: 1;
 	flex-direction: column;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 	box-sizing: border-box;
 	height: 64px;
 	justify-content: center;
@@ -63,7 +63,7 @@ const Contact = ({ room, user, setTitle, onClick }) => {
 					<Avatar src={userSnapshot.docs[0].data().avatar} />
 					<Info>
 						<Title>{userSnapshot.docs[0].data().name}</Title>
-						<Subtitle>{subtitle}</Subtitle>
+						<Subtitle>{subtitle ? subtitle : 'Tap to start chat'}</Subtitle>
 					</Info>
 				</Container>
 			}
