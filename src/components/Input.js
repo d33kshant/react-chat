@@ -7,7 +7,7 @@ const Container = styled.div`
 	/* border-radius: 32px; */
 	width: 100%;
 	height: 52px;
-	position: sticky;
+	position: fixed;
 	box-sizing: border-box;
 	display: flex;
 	background: white;
@@ -34,12 +34,15 @@ const SendButton = styled(IconButton)`
 
 const Input = ({ onSubmit, to, ...props}) => {
 	return (
+		<>
+		<div style={{height: '52px'}}></div>
 		<Container >
 			<InputBox ref={to} {...props} placeholder="Type something here" />
 			<SendButton onClick={onSubmit}>
 				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" ><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
 			</SendButton>
 		</Container>
+		</>
 	)
 }
 

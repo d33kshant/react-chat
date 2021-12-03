@@ -10,15 +10,18 @@ const Container = styled.header`
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	position: sticky;
+	position: fixed;
 	top: 0;
 `
 
 const Header = ({children, ...props}) => {
 	return (
+		<>
 		<Container {...props}>
 			{children}
 		</Container>
+		<div style={{height: '48px'}}></div>
+		</>
 	)
 }
 
