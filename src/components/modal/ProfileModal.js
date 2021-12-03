@@ -20,21 +20,23 @@ const Avatar = styled.img`
 
 const Title = styled.p`
 	font-family: inherit;
-	font-size: 24px;
+	font-size: 18px;
 	font-weight: 600;
-	margin: 0 32px;
+	margin: 0 16px;
 `
 
 const Subtitle = styled.p`
 	margin: 0;
 	color: gray;
 	font-family: inherit;
+	margin: 0 16px;
 	margin-bottom: 16px;
 `
 
 const LogOut = styled(Button)`
 	background: #ed4956 ;
-	margin-bottom: 16px;
+	margin-bottom: 8px;
+	width: calc(100% - 16px);
 
 	:hover {
 		background: #962a32 !important;
