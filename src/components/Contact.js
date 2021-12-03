@@ -6,7 +6,6 @@ import app from '../firebase'
 import ContactSkeleton from './ContactSkeleton'
 
 const Container = styled.div`
-	width: 100%;
 	display: flex;
 	align-items: center;
 	cursor: pointer;
@@ -32,16 +31,27 @@ const Info = styled.div`
 	box-sizing: border-box;
 	height: 64px;
 	justify-content: center;
+	padding: 0;
+	padding-right: 12px;
+	overflow: hidden;
 `
 
 const Title = styled.p`
 	margin: 0;
 	font-size: 16px;
+	white-space: nowrap;
+	overflow: hidden;
+	width: 100%;
+	text-overflow: ellipsis;
 `
 
 const Subtitle = styled.p`
 	margin: 0;
 	color: gray;
+	white-space: nowrap;
+	overflow: hidden;
+	width: 100%;
+	text-overflow: ellipsis;
 `
 
 const Contact = ({ room, user, setTitle, onClick }) => {
