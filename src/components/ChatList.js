@@ -4,11 +4,12 @@ import { useCollection } from 'react-firebase-hooks/firestore'
 import styled from 'styled-components'
 import app from '../firebase'
 import Chat from './Chat'
+import EmptyChats from './EmptyChats'
 
 const Container = styled.div`
 	width: 100%;
 	height: calc(100% - 100px);
-	overflow-y: auto;
+	overflow-y: scroll;
 	display: flex;
 	flex-direction: column-reverse;
 	align-items: center;
@@ -29,7 +30,10 @@ const ChatList = ({ room, self }) => {
 
 	useEffect(()=>{
 		if(chats){
-			endRef.current.scrollIntoView({ behavior: "smooth" })
+			const timeout = setTimeout(()=>{				
+				endRef.current.scrollIntoView({ behavior: "smooth" })
+				clearTimeout(timeout)
+			}, 500)
 		}
 	}, [chats])
 
@@ -40,11 +44,11 @@ const ChatList = ({ room, self }) => {
 				error ? 'Ooops Something Went Wrong' :
 				loading ? 
 				'Loading' :
-				chats ? 
+				chats.docs.length > 0 ? 
 				chats.docs.map((doc, index)=>{
 					const {body, author, time} = doc.data()
 					return <Chat key={index} self={author===self} time={time ? time.toDate().toDateString(): 'sending..'}>{body}</Chat>
-				}) : 'Ooops'
+				}) : <EmptyChats />
 			}
 			<Space >{/* Just for some extra spacing */}</Space>
 		</Container>
