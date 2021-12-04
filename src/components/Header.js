@@ -14,7 +14,7 @@ const Container = styled.header`
 	top: 0;
 `
 
-const Header = ({children, ...props}) => {
+const Header = ({ children, ...props}) => {
 	return (
 		<>
 		<Container {...props}>

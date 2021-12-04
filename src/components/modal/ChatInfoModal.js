@@ -85,7 +85,7 @@ const ChatInfoModal = ({ room, self, onClose, onAction}) => {
 
 	return (
 		<Background onClick={onClose}>
-			<Container style={{minWidth: '206px'}} onClick={event=>event.stopPropagation()}>
+			<Container onClick={event=>event.stopPropagation()}>
 				<Header>
 					<Title style={{margin: 0, padding: '0 16px',fontWeight:600}}>Info</Title>
 					<IconButton onClick={onClose}>

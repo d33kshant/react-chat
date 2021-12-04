@@ -12,14 +12,13 @@ const Container = styled.div`
 	display: flex;
 	background: white;
 	bottom: 0;
-	padding: 12px 0;
 `
 
 const InputBox = styled.input`
 	flex: 1;
 	border: none;
 	outline: none;
-	padding: 0 16px;
+	padding: 12px 16px;
 	font-size: 14px;
 	font-family: inherit;
 `

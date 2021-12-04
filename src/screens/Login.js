@@ -5,7 +5,7 @@ import app from '../firebase'
 
 const Container = styled.div`
 	width: 100%;
-	height: 100vh;
+	height: 100%;
 	background: white;
 	display: flex;
 	flex-direction: column;
